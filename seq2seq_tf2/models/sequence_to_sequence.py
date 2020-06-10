@@ -3,7 +3,6 @@ from seq2seq_tf2.encoders import rnn_encoder
 from seq2seq_tf2.decoders import rnn_decoder
 from utils.data_utils import load_word2vec
 import time
-import pdb
 
 
 class SequenceToSequence(tf.keras.Model):
@@ -29,6 +28,12 @@ class SequenceToSequence(tf.keras.Model):
         enc_output, enc_hidden = self.encoder(enc_inp, enc_hidden)
         return enc_output, enc_hidden
     
+    # def call_decoder_onestep(self, dec_input, dec_hidden, enc_output):
+    #     context_vector, attn_dist = self.attention(dec_hidden, enc_output)
+
+    #     _, pred, dec_hidden = self.decoder(dec_input, None, None, context_vector)
+    #     return pred, dec_hidden, context_vector, attn_dist
+    
     def call(self, enc_output, dec_inp, dec_hidden, dec_tar):
         predictions = []
         attentions = []
@@ -37,12 +42,10 @@ class SequenceToSequence(tf.keras.Model):
 
         for t in range(dec_tar.shape[1]): # 50
             # Teachering Forcing
-            """
-            应用decoder来一步一步预测生成词语概论分布
-            your code
-            如：xxx = self.decoder(), 采用Teachering Forcing方法
-            """
-            x, pred, dec_hidden = self.decoder(tf.expand_dims(dec_inp[:, t], 1), dec_hidden, enc_output, context_vector)
+            _, pred, dec_hidden = self.decoder(tf.expand_dims(dec_inp[:, t], 1),
+                                               dec_hidden,
+                                               enc_output,
+                                               context_vector)
             context_vector, attn_dist = self.attention(dec_hidden, enc_output)
             
             predictions.append(pred)

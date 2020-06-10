@@ -2,7 +2,7 @@ import tensorflow as tf
 from seq2seq_tf2.models.sequence_to_sequence import SequenceToSequence
 from seq2seq_tf2.batcher import batcher, Vocab
 from seq2seq_tf2.train_helper import train_model
-# from seq2seq_tf2.test_helper import beam_decode, greedy_decode
+from seq2seq_tf2.test_helper import beam_decode, greedy_decode
 from tqdm import tqdm
 from utils.data_utils import get_result_filename
 import pandas as pd
@@ -62,9 +62,11 @@ def test(params):
     print("Model restored")
     # for batch in b:
     #     yield batch_greedy_decode(model, batch, vocab, params)
-    if params['greedy_decode']:
+    if params['sampling_method'] == 'greedy_decoder':
         # params['batch_size'] = 512
         predict_result(model, params, vocab, params['test_save_dir'])
+    elif params['sampling_method'] == 'beam_search':
+        beam_decode(model, b, vocab, params)
 
 
 def predict_result(model, params, vocab, result_save_path):
