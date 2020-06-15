@@ -1,6 +1,5 @@
 from collections import defaultdict
 import os
-import pdb
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -16,8 +15,9 @@ def read_data(path_1, path_2, path_3):
             open(path_2, 'r', encoding='utf-8') as f2, \
             open(path_3, 'r', encoding='utf-8') as f3:
         words = []
+        # print(f1)
         for line in f1:
-            words += line.split()
+            words = line.split()
 
         for line in f2:
             words += line.split(' ')
@@ -48,11 +48,7 @@ def build_vocab(items, sort=True, min_count=0, lower=False):
                 i = i if not lower else item.lower()
                 dic[i] += 1
         # sort
-        """
-        按照字典里的词频进行排序，出现次数多的排在前面
-        your code(one line)
-        """
-        dic = sorted(dic.items(), key=lambda t: t[1], reverse=True)
+        dic = sorted(dic.items(), key=lambda d: d[1], reverse=True)
         for i, item in enumerate(dic):
             key = item[0]
             if min_count and min_count > item[1]:
@@ -63,15 +59,10 @@ def build_vocab(items, sort=True, min_count=0, lower=False):
         for i, item in enumerate(items):
             item = item if not lower else item.lower()
             result.append(item)
-    """
-    建立项目的vocab和reverse_vocab，vocab的结构是（词，index）
-    your code
-    vocab = (one line)
-    reverse_vocab = (one line)
-    """
-    vocab =[(dic[i][0], i) for i in range(len(dic))]
-    reverse_vocab = [(dic[w][0], i) for i, w in enumerate(range(len(dic)-1,-1,-1))]
-    pdb.set_trace()
+
+    vocab = [(w, i) for i, w in enumerate(result)]
+    reverse_vocab = [(i, w) for i, w in enumerate(result)]
+
     return vocab, reverse_vocab
 
 
